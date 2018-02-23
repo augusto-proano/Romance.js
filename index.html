@@ -78,24 +78,36 @@
 			  	var wordPairs = generateWordPairs(textArr);
 			  	// console.log(wordPairs);
 			  	
-			  	// Creates a line of poem from random words fromt the Markov Chain.
-			  	function writeLine(obj, numOfWords) {
-			    	var newLine = "";
-			    	// Adds a random word to the newLine "num" times + and empty space " " between each word
-				    for(var j = 0; j < numOfWords; j++) {
-				      var randomNum = Math.floor(Math.random() * (textArr.length - 1) );
-				      var randomKeyValue = obj[textArr[randomNum]];
-				      var randomIndex =Math.floor(Math.random() * (randomKeyValue.length - 1) )
-				      var randomWord = randomKeyValue[randomIndex];
-				      newLine += randomWord  + " ";
-				      // console.log(randomKeyValue);
-				      // console.log(randomWord);
-				    }
-				    // Deletes the last space from the new line created
-				    newLine = newLine.slice(0, newLine.length-1);
-				    
-				    return newLine;
-			 	}
+				function getNextWord(word){
+			    	var nextWord = '';
+			    	function random(min,max){
+			      		return Math.floor(Math.random()*(max-min+1)+min);
+			    	}
+			    	if(wordPairs[word]){
+			     		var randomNum = random(0,wordPairs[word].length-1);
+			      		nextWord = wordPairs[word][randomNum];
+			    	}
+
+			    return nextWord;
+			    }
+		  
+			    function writeLine(numOfWords){
+			    	var randomNum = Math.floor(Math.random() * (textArr.length - 1) );
+			    	var randomKeyValue = wordPairs[textArr[randomNum]];
+			    	var randomIndexNum = Math.floor(Math.random() * (randomKeyValue.length - 1) ) ;
+			    	var finalLine = randomKeyValue[randomIndexNum];
+			  		    
+			    	for(var i = 0; i<numOfWords; i++){
+			      		if(finalLine.lastIndexOf(' ') === -1){
+			        		finalLine+= ' ' + getNextWord(finalLine);
+			        		continue;
+			      		} 
+			      
+			      		finalLine+= ' ' + getNextWord(finalLine.slice(finalLine.lastIndexOf(' ')+1));
+			   		}
+			    
+			    	return finalLine;
+			    }
 
 			  	// Creates a parragraph with the specific number of lines specified on lines 
 			  	var newPoem = "";
@@ -103,9 +115,9 @@
   			  		// Adds a period instead of "," if it is the last line of the poem
   			  		// Gives a random num of words to add to the new line that is gonna be created in function writeLine within a 3-9 range
     		  		if(z === lines - 1){	
-			    		newPoem += writeLine(wordPairs, Math.floor(Math.random()*7) + 3) + ".";
+			    		newPoem += writeLine(Math.floor(Math.random()*7) + 3) + ".";
 			  		} else {
-			    		newPoem += writeLine(wordPairs, Math.floor(Math.random()*7) + 3) + ", " + "<br>";
+			    		newPoem += writeLine(Math.floor(Math.random()*7) + 3) + ", " + "<br>";
 			  		}
   				}
 
